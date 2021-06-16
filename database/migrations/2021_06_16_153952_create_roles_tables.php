@@ -69,8 +69,9 @@ class CreateRolesTables extends Migration
      */
     public function down()
     {
-        Schema::table('roles', function (Blueprint $table) {
-            //
-        });
+        Schema::drop('role_user');
+        Schema::drop('permission_role');
+        Schema::drop('permissions');
+        Schema::drop('roles');
     }
 }
