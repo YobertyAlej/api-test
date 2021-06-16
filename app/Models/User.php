@@ -55,22 +55,23 @@ class User extends Authenticatable
     /**
      * Grant a role to the user
      *
-     * @return bool
+     * @param  \App\Models\Role  $role
+     * @return \App\Models\Role
      */
     public function grantRole($role)
     {
-        return $this->roles()->save($role);
+        return $this->roles()->sync($role, false);
     }
 
     /**
      * Get the permissions assigned to the user
      * through the roles relationship
      *
-     * @return Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection
      */
     public function permissions()
     {
-        return $this->role
+        return $this->roles
             ->map
             ->permissions
             ->flatten()

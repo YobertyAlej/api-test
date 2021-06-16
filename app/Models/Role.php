@@ -15,7 +15,7 @@ class Role extends Model
     /**
      * The permissions associated to the role
      *
-     * @return Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function permissions()
     {
@@ -25,10 +25,11 @@ class Role extends Model
     /**
      * Allow a role to have a permission
      *
-     * @return bool
+     * @param  \App\Models\Permission  $permission
+     * @return \App\Models\Permission
      */
     public function allowTo($permission)
     {
-        return $this->permissions()->save($permission);
+        return $this->permissions()->sync($permission, false);
     }
 }
