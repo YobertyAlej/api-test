@@ -25,11 +25,15 @@ class Role extends Model
     /**
      * Allow a role to have a permission
      *
-     * @param  \App\Models\Permission  $permission
+     * @param  mixed  $permission
      * @return \App\Models\Permission
      */
     public function allowTo($permission)
     {
+        if (is_string($permission)) {
+            $permission = Permission::where('name', $permission)->firstOrFail();
+        }
+
         return $this->permissions()->sync($permission, false);
     }
 }
