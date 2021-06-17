@@ -1,62 +1,120 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Laravel API
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Prueba de conocimiento
 
-## About Laravel
+Mas información en [Prueba-de-conocimiento.pdf](/docs/Prueba-de-conocimiento.pdf)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Documentación de los endpoints
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+En la carpeta `docs` se encuentra toda la documentación de los endpoints.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+La documentación puede visualizarse en vivo levantando
+un servidor local al archivo [Documentación en vivo](/docs/InsomniaDocumenter/index.html)
 
-## Learning Laravel
+Se puede visualizar abriendo el archivo pdf [Insomnia-Documenter-Laravel-API.pdf](/docs/Insomnia-Documenter-Laravel-API.pdf)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Para trabajar directamente con los endpoints puede ser importado directamente a la herramienta [Insomnia](https://insomnia.rest/download), la cual es un cliente para el consumo de APIs, usando el archivo exportado de JSON [Insomnia_2021-06-17.json](/docs/Insomnia_2021-06-17.json).
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Dentro de insomnia setear las variables de entorno (ENV) TOKEN y HOME, donde HOME es el dominio del servidor (Ejemplo: `http://127.0.0.1:8000`) y TOKEN es el Bearer Token generado despues de logearse correctamente en la plataforma.
 
-## Laravel Sponsors
+## Instalación y levantamiento del servidor
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Para prueba local, asegurate de tener instalado [Composer](https://getcomposer.org/download/).
 
-### Premium Partners
+Correr los siguientes comandos en una terminal,
+situandose en la raiz de este proyecto
+```
+// Para instalar las dependencias
+composer install
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
+// Establecer y configurar el archivo .env
+cp .env.example .env
 
-## Contributing
+// Para correr las migraciones seteando las tablas
+php artisan migrate
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+// Para correr los Seeders, cargando la data inicial
+php artisan db:seed
 
-## Code of Conduct
+// Para levantar el servidor
+php artisan serve
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Sistema de Roles y Permisos (RBAC)
 
-## Security Vulnerabilities
+El sistema de roles se maneja usando 2 entidades
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+* Roles (Tabla `roles`)
+* Permisos (tabla `permissions`)
 
-## License
+En una relación de muchos-a-muchos, es decir, muchos
+roles pueden tener muchos permisos.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Para hacer esto se hace uso de 1 tabla puente o pivot (permission_role).
+
+A su vez se relacionan los roles con el `Usuario` a través
+de 1 tabla puente (role_user).
+
+### Permisos
+
+Despues de haber corrido los seeders `php artisan db:seed`,
+en la plataforma se cargan automaticamente 7 permisios iniciales
+
+* **create_user** - Crear usuario
+* **list_users** - Listar usuarios
+* **edit_user** - Editar usuario
+* **delete_user** - Eliminar usuario
+* **show_user** - Ver detalle de usuario
+* **manage_roles** - Manejar roles
+* **manage_permissions** - Manejar permisos
+
+Estos permisos son usados en la plataforma para autorizar,
+el uso de los endpoints para cada usuario.
+
+### Super Admin
+
+Por defecto la plataforma posee un usuario con el rol
+de `superadmin`, este rol y usuario son unicos y poseen todos los permisos en la plataforma excepto por la 
+capacidad de eliminarse a si mismo y a su rol.
+
+El uso de este usuario permite un mayor control en la
+plataforma y evita que la plataforma pueda quedarse
+sin la capacidad de administrarse a si misma debido
+a la naturaleza flexible de los roles de usuario.
+
+El usuario por defecto `superadmin` tiene las credenciales
+
+```
+Email: admin@mail.com
+Contraseña: 12345678
+```
+
+Para configurar el usuario superadmin inicial solo debe setearse
+los valores de entorno `SUPERADMIN_EMAIL` y `SUPERADMIN_PASSWORD`
+en el archivo `.env` de la plataforma con los valores correspondientes
+
+### Autorización y validación
+
+La autorización se lleva a cabo usando una combinación de
+`Policies` y `Requests`.
+
+Existen 2 Policies
+
+* `App\Policies\UserPolicy`
+* `App\Policies\RolePolicy`
+
+Existen 10 Request
+
+* `App\Http\Requests\StoreUserRequest`
+* `App\Http\Requests\UpdateUserRequest`
+* `App\Http\Requests\DeleteUserRequest`
+* `App\Http\Requests\GrantRoleToUserRequest`
+* `App\Http\Requests\RevokeRoleToUserRequest`
+* `App\Http\Requests\StoreRoleRequest`
+* `App\Http\Requests\UpdateRoleRequest`
+* `App\Http\Requests\DeleteRoleRequest`
+* `App\Http\Requests\GrantPermissionToRoleRequest`
+* `App\Http\Requests\RevokePermissionToRoleRequest`
+
+Internamente se determina si se esta autorizado utilizando
+el sistema de roles y permisos anteriormente definido.

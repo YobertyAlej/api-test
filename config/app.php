@@ -123,6 +123,11 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+
+
+    'superadmin_email' => env('SUPERADMIN_EMAIL', 'admin@mail.com'),
+    'superadmin_password' => env('SUPERADMIN_PASSWORD', '12345678'),
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

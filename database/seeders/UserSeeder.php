@@ -20,8 +20,8 @@ class UserSeeder extends Seeder
     {
         $superadmin = User::firstOrCreate([
             'name' => 'Super Admin',
-            'email' => 'admin@mail.com',
-            'password' => Hash::make('12345678'),
+            'email' => config('app.superadmin_email'),
+            'password' => Hash::make(config('app.superadmin_password')),
             'dob' => Carbon::parse('2000-01-01'),
             'gender' => 'M',
             'dni' => $faker->randomNumber(7),
