@@ -2,10 +2,11 @@
 
 namespace App\Policies;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class UserPolicy
+class RolePolicy
 {
     use HandlesAuthorization;
 
@@ -17,19 +18,19 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->isAllowedTo('list_users');
+        return $user->isAllowedTo('manage_roles');
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\Role  $role
      * @return mixed
      */
     public function view(User $user)
     {
-        return $user->isAllowedTo('show_user');
+        return $user->isAllowedTo('manage_roles');
     }
 
     /**
@@ -40,50 +41,54 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        return $user->isAllowedTo('create_user');
+        return $user->isAllowedTo('manage_roles');
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\Role  $role
      * @return mixed
      */
-    public function update(User $user, User $model)
+    public function update(User $user)
     {
-        return $user->isAllowedTo('edit_user');
+        return $user->isAllowedTo('manage_roles');
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\Role  $role
      * @return mixed
      */
-    public function delete(User $user, User $model)
+    public function delete(User $user)
     {
-        if ($model->isSuperAdmin()){
-            return false;
-        }
+        return $user->isAllowedTo('manage_roles');
+    }
 
-        return $user->isAllowedTo('delete_user');
+    /**
+     * Determine whether the user can restore the model.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Role  $role
+     * @return mixed
+     */
+    public function restore(User $user)
+    {
+        return $user->isAllowedTo('manage_roles');
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\Role  $role
      * @return mixed
      */
-    public function forceDelete(User $user, User $model)
+    public function forceDelete(User $user)
     {
-        if ($model->isSuperAdmin()){
-            return false;
-        }
-
-        return $user->isAllowedTo('delete_user');
+        return $user->isAllowedTo('manage_roles');
     }
 }
