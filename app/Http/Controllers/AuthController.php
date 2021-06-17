@@ -31,10 +31,9 @@ class AuthController extends Controller
             ]);
         }
 
-        $user->tokens()->delete();
         $token = $user->createToken($request->email)->plainTextToken;
     
-        return response()->json($token);
+        return response()->json($token, 201);
     }
 
     /**
@@ -45,7 +44,7 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
+        $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'The user has been logout successfully']);
     }

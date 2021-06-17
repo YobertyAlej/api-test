@@ -2,17 +2,38 @@
 
 namespace App\Models;
 
+use App\Exceptions\RoleNotFoundException;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Role;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['age'];
+
+    /**
+     * Dates
+     *
+     * @var array
+     */
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'dob',
+    ];
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -22,6 +43,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'dob',
+        'gender',
+        'dni',
+        'address',
+        'country',
+        'phone'
     ];
 
     /**
@@ -62,10 +89,31 @@ class User extends Authenticatable
     public function grantRole($role)
     {
         if (is_string($role)) {
-            $role = Role::where('name', $role)->firstOrFail();
+            try {
+                $role = Role::where('name', $role)->firstOrFail();
+            } catch (ModelNotFoundException $e) {
+                throw new RoleNotFoundException;
+            }
         }
 
         return $this->roles()->sync($role, false);
+    }
+
+    /**
+     * Revoke a role to the user
+     *
+     * @param  mixed  $role
+     * @return \App\Models\Role
+     */
+    public function revokeRole($role)
+    {
+        try {
+            $role = Role::where('name', $role)->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            throw new RoleNotFoundException;
+        }
+
+        return $this->roles()->detach($role);
     }
 
     /**
@@ -82,5 +130,38 @@ class User extends Authenticatable
             ->flatten()
             ->pluck('name')
             ->unique();
+    }
+
+    /**
+     * Determinate if the user has the superadmin role
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function isSuperAdmin()
+    {
+        return $this->roles->pluck('name')->contains(Role::$SUPERADMIN);
+    }
+
+    /**
+     * Determinate if the user has a permission assigned
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function isAllowedTo($permission)
+    {
+        return $this->isSuperAdmin() || $this->permissions()->contains($permission);
+    }
+
+    /**
+     * Accesor for calculating the age based on
+     * the date of birth
+     *
+     * @return string
+     */
+    public function getAgeAttribute()
+    {
+        return Carbon::parse($this->attributes['dob'])
+            ->diff(Carbon::now())
+            ->format('%y');
     }
 }
