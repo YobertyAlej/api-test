@@ -39,6 +39,11 @@ class PermissionSeeder extends Seeder
             'label' => 'Ver detalle de usuario'
         ]);
 
+        $manage_roles = Permission::firstOrCreate([
+            'name' => 'manage_roles',
+            'label' => 'Manejar roles'
+        ]);
+        
         $manage_permission = Permission::firstOrCreate([
             'name' => 'manage_permissions',
             'label' => 'Manejar permisos'

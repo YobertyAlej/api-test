@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Role;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GrantRoleToUserRequest extends FormRequest
@@ -13,7 +14,11 @@ class GrantRoleToUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->isAllowedTo('manage_permissions');
+        $role = $this->input('role');
+        if($role == Role::$SUPERADMIN){
+            return false;
+        }
+        return $this->user()->isAllowedTo('manage_roles');
     }
 
     /**
@@ -24,7 +29,7 @@ class GrantRoleToUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'permission' => 'required'
+            'role' => 'required'
         ];
     }
 }
