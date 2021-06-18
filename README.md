@@ -118,3 +118,11 @@ Existen 10 Request
 
 Internamente se determina si se esta autorizado utilizando
 el sistema de roles y permisos anteriormente definido.
+
+### Unit Testing
+
+Para ejecutar las pruebas unitarias, corre el comando
+
+```
+composer run test
+```
