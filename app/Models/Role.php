@@ -28,6 +28,16 @@ class Role extends Model
     }
 
     /**
+     * The users associated to the role
+     *
+     * @return Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class)->withTimestamps();
+    }
+    
+    /**
      * Allow a role to have a permission
      *
      * @param  mixed  $permission
